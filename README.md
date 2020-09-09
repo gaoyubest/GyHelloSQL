@@ -1,7 +1,17 @@
 ## 查询
 
 - 1、ORDER BY 根据指定的列对结果集进行排序，默认按照升序，降序 ORDER BY DESC
+##### 按条件取数据
 - LIMIT(m, n) 从第 m + 1 行开始取 n 条记录 ;第一个参数指定第一个返回记录行的偏移量，第二个参数指定返回记录行的最大数目。注意:初始记录行的偏移量是 0(而不是 1)
+```sql
+# 取第二大的数据
+SELECT emp_no,salary
+FROM salaries 
+WHERE to_date='9999-01-01' 
+ORDER BY salary DESC 
+LIMIT 1,1
+```
+  
 - INNER JOIN 两边表同时有对应的数据，即任何一边缺失数据就不显示。
 LEFT JOIN 会读取左边数据表的全部数据，即便右边表无对应数据。
 RIGHT JOIN 会读取右边数据表的全部数据，即便左边表无对应数据。
