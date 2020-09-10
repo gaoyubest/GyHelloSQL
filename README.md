@@ -1,8 +1,17 @@
-## 查询
+> 本笔记为sql自学习笔记
+> 参考https://www.zhihu.com/collection/585356510
 
-- 1、ORDER BY 根据指定的列对结果集进行排序，默认按照升序，降序 ORDER BY DESC
-##### 按条件取数据
-- LIMIT(m, n) 从第 m + 1 行开始取 n 条记录 ;第一个参数指定第一个返回记录行的偏移量，第二个参数指定返回记录行的最大数目。注意:初始记录行的偏移量是 0(而不是 1)
+# 一、连接查询
+```sql
+SELECT columns_name       --查找字段
+FROM Table                --目标表
+WHERE condition           --过滤条件
+GROUP BY columns_name     --按列值分组，可以1个或多个列
+HAVING condition          --分组后的筛选条件，HAVING与WHERE区别在于前者表达式中可包含函数
+ORDER BY columns_name     --根据指定的列对结果集进行排序，默认按照升序，降序 ORDER BY DESC
+LIMIT start, row_count    --按条件取数据，start开始行号，row_count限制条数。注意:初始记录行的偏移量是 0(而不是 1)
+```
+eg：
 ```sql
 # 取第二大的数据
 SELECT emp_no,salary
@@ -12,9 +21,7 @@ ORDER BY salary DESC
 LIMIT 1,1
 ```
   
-- INNER JOIN 两边表同时有对应的数据，即任何一边缺失数据就不显示。
-LEFT JOIN 会读取左边数据表的全部数据，即便右边表无对应数据。
-RIGHT JOIN 会读取右边数据表的全部数据，即便左边表无对应数据。
+eg：
 ```sql
 # 分组后继续查询
 SELECT user_name 
@@ -24,7 +31,64 @@ GROUP BY user_id
 HAVING COUNT(id)>2;
 ```
 
-## 函数
+![](./images/sql连接.jpg)
+
+- INNER JOIN 两边表同时有对应的数据，即任何一边缺失数据就不显示。
+LEFT JOIN 会读取左边数据表的全部数据，右边表无对应则为NULL。
+RIGHT JOIN 会读取右边数据表的全部数据，左边表无对应则为NULL。
+## 1、内连接(INNER JOIN)
+取数图例：
+![](./images/inner1.jpg)
+![](./images/inner2.jpg)
+```sql
+SELECT A.学号, A.姓名, B.课程号
+FROM student AS A INNER JOIN score as B
+ON A.学号 = B.学号;
+```
+![](./images/inner3.jpg)
+
+## 2、左连接（LEFT JOIN）
+取数图例：
+![](./images/left1.jpg)
+![](./images/left2.jpg)
+```sql
+SELECT A.学号, A.姓名, B.课程号
+FROM student AS A LEFT JOIN score AS B
+ON A.学号 = B.学号;
+```
+![](./images/left3.jpg)
+
+```sql
+SELECT A.学号, A.姓名, B.课程号
+FROM student AS A LEFT JOIN score AS B
+ON A.学号 = B.学号;
+WHERE B.学号 IS NULL
+```
+![](./images/left4.jpg)
+
+
+## 3、右连接(RAIGHT JOIN)
+![](./images/right1.jpg)
+![](./images/right2.jpg)
+```sql
+SELECT A.学号, A.姓名, B.课程号
+FROM student AS A RIGHT JOIN score AS B
+ON A.学号 = B.学号;
+```
+![](./images/right3.jpg)
+SQL语句：去掉交集部分
+```SQL
+SELECT A.学号, A.姓名, B.课程号
+FROM student AS A RIGHT JOIN score AS B
+ON A.学号 = B.学号;
+WHERE A.学号 IS NULL;
+```
+![](./images/right4.jpg)
+
+
+
+
+# 函数
 - MAX 取最大值 eg：SELECT MAX(hire_date) FROM employees
 - replace(original-string，search-string，replace-string)
   - original-string： 被搜索的字符串。可为任意长度。 
