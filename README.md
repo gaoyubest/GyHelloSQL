@@ -1,5 +1,6 @@
 > 本笔记为sql自学习笔记
-> 参考https://www.zhihu.com/collection/585356510
+> [引用笔记详细见此链接](https://www.zhihu.com/collection/585356510)
+> [W3School学习网站](https://www.w3school.com.cn/sql/index.asp)
 
 # 一、连接查询
 ```sql
@@ -86,31 +87,92 @@ WHERE A.学号 IS NULL;
 ![](./images/right4.jpg)
 
 
+# 分页查询
+```sql
+# 每5行一页，返回第2页的数据
+SELECT * FROM employees LIMIT 5,5
+# select * from table limit (start-1)*limit,limit; 其中start是页码，limit是每页显示的条数。
+SELECT * FROM employees LIMIT (2-1)*5,5
+```
 
 
 # 函数
-- MAX 取最大值 eg：SELECT MAX(hire_date) FROM employees
-- replace(original-string，search-string，replace-string)
-  - original-string： 被搜索的字符串。可为任意长度。 
-  - search-string： 要搜索并被 replace-string 替换的字符串。该字符串的长度不应超过 255 个字节。如果 search-string 是空字符串，则按原样返回原始字符串。 
-  - replace-string： 该字符串用于替换 search-string。可为任意长度。如果 replacement-string 是空字符串，则删除出现的所有 search-string。
+1、MAX 取最大值 
+```sql
+SELECT MAX(hire_date) FROM employees
+```
+2、REPLACE(original-string，search-string，replace-string)
+
 ```SQL
+# original-string： 被搜索的字符串。
+# search-string： 要搜索并被 replace-string 替换的字符串。 
+# replace-string： 该字符串用于替换 search-string。
 UPDATE `titles_test`
 SET emp_no = REPLACE(emp_no,'10001','10005') 
 WHERE id=5 AND emp_no=10001
 ```
 
-## 表操作
-```sql 
-# 重命名：
-ALTER TABLE titles_test RENAME TO titles_2017;
+3、SUBSTR(string,start,[len]) 截取字段中某个字符
+```sql
+# string是要截取的字符串
+# start是字符串的起始位置，±(1~length(string))，当start=length(string)，截取最后一个字符;当start=-n时，从倒数第n个字符处截取。
+# len是要截取字符串的长度，若len省略，则从start处截取到字符串末尾；若len大于剩下的字符串长度，也是截取到字符串末尾为止。
+SELECT first_name
+FROM Employees
+ORDER BY SUBSTR(first_name,-2)
 ```
 
-## 创建视图
-视图无非就是存储在数据库中并具有名字的 SQL 语句，或者说是以预定义的 SQL 查询的形式存在的数据表的成分。，一种虚拟的表.
+4、group_concat(x[,y])，连接函数。y为x值之间的连接符，默认为逗号。
+
 ```sql
-CREATE VIEW view_name AS
-SELECT column1, column2.....
-FROM table_name
-WHERE [condition];
+SELECT dept_no, group_concat(emp_no) AS employees
+FROM dept_emp
+GROUP BY dept_no
 ```
+
+5、排名函数
+- ROW_NUMBER 
+```sql
+# over子句选择对某一列进行排序生成序号，1，2，3，4，5...
+SELECT ROW_NUMBER() OVER(ORDER BY [UserId] DESC) AS rank,* FROM [Order]
+```
+- RANK
+```sql
+# 1,1,3,3,3,6,6,8...
+SELECT RANK() OVER(ORDER BY [UserId] DESC) AS rank,* FROM [Order]
+```
+- DENSE_RANK
+```sql
+# 1,2,2,2,3,3,...
+SELECT DENSE_RANK() OVER(ORDER BY [UserId] DESC) AS rank,* FROM [Order]
+```
+
+- NTILE
+```sql
+# 6行数据：1,1,2,2,3,4。ntile函数可以对序号进行分组处理，将有序分区中的行分发到指定数目的组中。
+SELECT NTILE(4) OVER(ORDER BY [UserId] DESC) AS rank,* FROM [Order]
+```
+[具体使用方法见此链接](https://www.cnblogs.com/52XF/p/4209211.html)
+
+
+### EXISTS关键字
+```sql
+# 使用含有关键字exists查找未分配具体部门的员工的所有信息
+SELECT * 
+FROM employees
+WHERE NOT EXISTS (
+     SELECT emp_no
+     FROM dept_emp
+     WHERE employees.emp_no= dept_emp.emp_no
+)
+```
+
+### 查询字符中某指定字符的个数
+```sql
+# 思路：原字符串长度 - 将原字符串中要统计的字符替换成空的长度
+# 查找字符串'10,A,B' 中逗号','出现的次数cnt
+SELECT length('10,A,B') - length(replace('10,A,B',',',''))
+```
+
+
+
