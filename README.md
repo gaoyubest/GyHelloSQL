@@ -173,6 +173,12 @@ WHERE NOT EXISTS (
 # 查找字符串'10,A,B' 中逗号','出现的次数cnt
 SELECT length('10,A,B') - length(replace('10,A,B',',',''))
 ```
-
+### 强制指定索引查询（FORCE）
+```sql
+# SQLite
+SELECT * FROM 表名 INDEXED BY 索引名 WHERE 条件
+# MySQL
+SELECT * FROM 表名 FORCE INDEX（索引名） WHERE 条件
+```
 
 
